@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Главная страница</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+    .card-img-top {
+        width: 100%;
+        height: 200px;
+        object-fit: contain; /* теперь изображение влезает целиком */
+        background-color: #f8f9fa; /* светлый фон вокруг картинки */
+    }
+</style>
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+    <!-- Навигация -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/builds">Готовые сборки</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Видеокарта</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Процессор</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Мат Плата</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">ОЗУ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Корпуса</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">БП</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Кнопки "Корзина" и "Войти" справа сверху -->
+    <div class="d-flex justify-content-end gap-3 mt-3">
+        <!-- Кнопка Корзина -->
+        <a href="/cart" class="btn btn-outline-primary d-inline-flex flex-column align-items-center">
+            <img src="{{ url_for('static', filename='pin/basket.jpg') }}" alt="Корзина" style="width: 40px; height: 40px;">
+            <span>Корзина</span>
+        </a>
+
+        <!-- Кнопка Войти -->
+        <a href="/login" class="btn btn-outline-success d-inline-flex flex-column align-items-center">
+            <img src="{{ url_for('static', filename='pin/login.jpg') }}" alt="Войти" style="width: 40px; height: 40px;">
+            <span>Войти</span>
+        </a>
+    </div>
+
+
+    <!-- Лента хит продаж -->
+<h3 class="mt-5 text-center">Хит продаж</h3>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for product in products %}
+    <div class="col">
+        <div class="card h-100">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" class="card-img-top" alt="{{ product.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text text-muted">Цена: {{ product.price }}</p>
+                <a href="#" class="btn btn-primary">Купить</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

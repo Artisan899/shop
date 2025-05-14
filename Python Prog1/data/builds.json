@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Компьютер BLOODY BD-PC CH61C1",
+        "price": 79990,
+        "category": "PC",
+        "cpu": "Intel Core i5 12400F, 2.5 ГГц",
+        "gpu": " NVIDIA GeForce RTX 4060 - 8 ГБ",
+        "motherboard": "MSI Z790",
+        "ram": "32GB DDR5",
+        "image": "product1.jpg"
+    },
+    {
+        "name": "Компьютер MSI Infinite E1",
+        "price": 109990,
+        "category": "PC",
+        "cpu": "Intel Core i5 14400F",
+        "gpu": "NVIDIA GeForce RTX 4060 - 8 ГБ",
+        "motherboard": "Gigabyte B460",
+        "ram": "16GB DDR4",
+        "image": "product2.jpg"
+    },
+    {
+        "name": "Компьютер iRU Game 510H6SEA",
+        "price": 49390,
+        "category": "PC",
+        "cpu": "Intel Core i3 12100F, 3.3 ГГц",
+        "gpu": "NVIDIA GeForce RTX 3050 - 6 ГБ",
+        "motherboard": "Intel H610",
+        "ram": "16GB DDR4",
+        "image": "product3.jpg"
+    }
+]

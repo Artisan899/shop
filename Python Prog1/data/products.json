@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Компьютер MSI Infinite E1 14NUC5-046XRU Intel Core i5 14400F",
+    "price": 109990,
+    "image": "product1.jpg"
+  },
+  {
+    "name": "Видеокарта Palit NVIDIA GeForce RTX 5090 RTX5090 GAMEROCK OC",
+    "price": 295990,
+    "image": "product2.jpg"
+  },
+  {
+    "name": "Процессор AMD Ryzen 7 5700X, AM4",
+    "price": 11790,
+    "image": "product3.jpg"
+  }
+
+]
