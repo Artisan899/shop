@@ -1,35 +1,37 @@
+<!-- templates/base_product.html -->
 <div class="col">
     <div class="card h-100">
         <!-- Галерея изображений -->
         <div class="product-gallery">
             <div class="main-image">
-                {% for img in product.images %}
-                <img src="{{ url_for('static', filename='images/' + product_type + 's/' + img) }}"
+                {% for img in images %}
+                <img src="{{ url_for('static', filename='images/builds/' + img) }}"
                      class="card-img-top {% if loop.first %}active{% else %}d-none{% endif %}"
-                     alt="{{ product.name }}"
+                     alt="{{ name }}"
                      data-index="{{ loop.index0 }}">
                 {% endfor %}
             </div>
-            {% if product.images|length > 1 %}
+            {% if images|length > 1 %}
             <div class="thumbnail-container d-flex justify-content-center mt-2">
-                {% for img in product.images %}
+                {% for img in images %}
                 <div class="thumbnail-indicator mx-1 {% if loop.first %}active{% endif %}"
                      data-index="{{ loop.index0 }}"
-                     onclick="changeImage(this, '{{ product.id }}')"></div>
+                     onclick="changeImage(this, '{{ id }}')"></div>
                 {% endfor %}
             </div>
             {% endif %}
         </div>
 
         <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
+            <h5 class="card-title">{{ name }}</h5>
 
-            {% block product_specs %}{% endblock %}
+            <!-- Спецификации -->
+            {{ specs|safe }}
 
-            <p class="price">Цена: {{ product.price }} ₽</p>
+            <p class="price">Цена: {{ price }} ₽</p>
 
             <button class="btn btn-add-to-cart"
-                    onclick="addToCart(this, '{{ product.id }}', '{{ product_type }}')">
+                    onclick="addToCart(this, '{{ id }}', '{{ product_type }}')">
                 В корзину
             </button>
 
@@ -37,10 +39,10 @@
                 <span class="cart-status">Уже в вашей корзине</span>
                 <div class="quantity-controls">
                     <button class="btn btn-outline-secondary btn-sm"
-                            onclick="changeQuantity(this, -1, '{{ product.id }}', '{{ product_type }}')">−</button>
+                            onclick="changeQuantity(this, -1, '{{ id }}', '{{ product_type }}')">−</button>
                     <span class="quantity">1</span>
                     <button class="btn btn-outline-secondary btn-sm"
-                            onclick="changeQuantity(this, 1, '{{ product.id }}', '{{ product_type }}')">+</button>
+                            onclick="changeQuantity(this, 1, '{{ id }}', '{{ product_type }}')">+</button>
                 </div>
             </div>
         </div>

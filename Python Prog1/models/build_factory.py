@@ -10,20 +10,14 @@ class BuildFactory:
 
         builds = []
         for item in data:
-            # Обработка изображений (поддержка старого и нового формата)
-            image = item.get('image', item.get('images', ['default.jpg'])[0])
-            images = item.get('images', [image])
-
-            builds.append(PCBuild(
-                id=str(item['id']),
-                name=item['name'],
-                price=float(item['price']),
-                category=item.get('category', 'PC'),
-                cpu=item['cpu'],
-                gpu=item['gpu'],
-                motherboard=item['motherboard'],
-                ram=item['ram'],
-                image=image,
-                images=images
-            ))
+            builds.append({
+                'id': item['id'],
+                'name': item['name'],
+                'price': item['price'],
+                'images': item.get('images', [item.get('image')]),
+                'cpu': item['cpu'],
+                'gpu': item['gpu'],
+                'motherboard': item['motherboard'],
+                'ram': item['ram']
+            })
         return builds

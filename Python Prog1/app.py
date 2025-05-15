@@ -163,17 +163,24 @@ def update_cart():
 
 @app.route('/builds')
 def builds():
+
     builds = BuildFactory.load_builds_from_json('data/builds.json')
+    print(builds[0])  # Проверьте структуру данных перед передачей в шаблон
     cart = session.get('cart', {})
     cart_build_ids = [key.split('_')[1] for key in cart.keys() if key.startswith('build_')]
-    return render_template('builds.html', builds=builds, cart_ids=cart_build_ids)
-
+    return render_template('builds.html',
+                         builds=builds,
+                         cart_ids=cart_build_ids,
+                         product_type='build')
 @app.route('/gpus')
 def gpus():
     gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
     cart = session.get('cart', {})
     cart_gpu_ids = [key.split('_')[1] for key in cart.keys() if key.startswith('gpu_')]
-    return render_template('gpus.html', gpus=gpus, cart_ids=cart_gpu_ids)
+    return render_template('gpus.html',
+                         gpus=gpus,
+                         cart_ids=cart_gpu_ids,
+                         product_type='gpu')
 
 
 

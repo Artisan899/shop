@@ -6,19 +6,17 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Готовые сборки</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for product in builds %}
-            {% with product_type='build' %}
-                {% include "base_product.html" %}
+        {% for build in builds %}
+            {% set specs %}
+            <ul class="list-unstyled">
+                <li><strong>Процессор:</strong> {{ build.cpu }}</li>
+                <li><strong>Видеокарта:</strong> {{ build.gpu }}</li>
+                <li><strong>Материнская плата:</strong> {{ build.motherboard }}</li>
+                <li><strong>Оперативная память:</strong> {{ build.ram }}</li>
+            </ul>
+            {% endset %}
 
-                {% block product_specs %}
-                <ul class="list-unstyled">
-                    <li><strong>Процессор:</strong> {{ product.cpu }}</li>
-                    <li><strong>Видеокарта:</strong> {{ product.gpu }}</li>
-                    <li><strong>Материнская плата:</strong> {{ product.motherboard }}</li>
-                    <li><strong>Оперативная память:</strong> {{ product.ram }}</li>
-                </ul>
-                {% endblock %}
-            {% endwith %}
+            {% include "base_product.html" with context %}
         {% endfor %}
     </div>
 </div>
