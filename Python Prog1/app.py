@@ -161,26 +161,19 @@ def update_cart():
     })
 
 
-@app.route('/gpus')
-def gpus():
-    gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
-    cart = session.get('cart', {})
-
-    # Получаем только ID видеокарт, которые есть в корзине
-    cart_gpu_ids = [key.split('_')[1] for key in cart.keys() if key.startswith('gpu_')]
-
-    return render_template('gpus.html', gpus=gpus, cart_ids=cart_gpu_ids)
-
-
 @app.route('/builds')
 def builds():
     builds = BuildFactory.load_builds_from_json('data/builds.json')
     cart = session.get('cart', {})
-
-    # Получаем только ID сборок, которые есть в корзине
     cart_build_ids = [key.split('_')[1] for key in cart.keys() if key.startswith('build_')]
-
     return render_template('builds.html', builds=builds, cart_ids=cart_build_ids)
+
+@app.route('/gpus')
+def gpus():
+    gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
+    cart = session.get('cart', {})
+    cart_gpu_ids = [key.split('_')[1] for key in cart.keys() if key.startswith('gpu_')]
+    return render_template('gpus.html', gpus=gpus, cart_ids=cart_gpu_ids)
 
 
 

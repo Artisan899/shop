@@ -1,0 +1,58 @@
+.product-gallery {
+    position: relative;
+}
+
+.main-image {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    overflow: hidden;
+}
+
+.main-image img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    transition: opacity 0.3s;
+    position: absolute;
+    opacity: 0;
+}
+
+.main-image img.active {
+    opacity: 1;
+    position: static;
+}
+
+.thumbnail-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.thumbnail-indicator.active {
+    background-color: #007bff;
+    transform: scale(1.2);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.price {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #d9534f;
+}
+
+.btn-add-to-cart {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    margin-top: auto;
+}
