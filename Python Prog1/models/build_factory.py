@@ -10,6 +10,7 @@ class BuildFactory:
 
         for item in data:
             build = PCBuild(
+                id=item['id'],
                 name=item['name'],
                 price=item['price'],
                 category=item['category'],

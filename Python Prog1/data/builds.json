@@ -1,5 +1,6 @@
 [
     {
+        "id": "build_1",
         "name": "Компьютер BLOODY BD-PC CH61C1",
         "price": 79990,
         "category": "PC",
@@ -10,6 +11,7 @@
         "image": "product1.jpg"
     },
     {
+        "id": "build_2",
         "name": "Компьютер MSI Infinite E1",
         "price": 109990,
         "category": "PC",
@@ -20,6 +22,7 @@
         "image": "product2.jpg"
     },
     {
+        "id": "build_3",
         "name": "Компьютер iRU Game 510H6SEA",
         "price": 49390,
         "category": "PC",

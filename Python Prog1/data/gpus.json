@@ -1,0 +1,22 @@
+[
+    {
+        "id": "gpu_1",
+        "name": "Palit NVIDIA GeForce RTX 5070",
+        "price": 64360,
+        "category": "GPU",
+        "memory": "12 GB",
+        "memory_type": "GDDR7",
+        "clock_speed": 28000,
+        "image": "gpus1.jpg"
+    },
+    {
+        "id": "gpu_2",
+        "name": "MSI NVIDIA GeForce RTX 4060TI",
+        "price": 49590,
+        "category": "GPU",
+        "memory": "8 GB",
+        "memory_type": "GDDR6",
+        "clock_speed": 18000,
+        "image": "gpus2.jpg"
+    }
+]
