@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Процессоры{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Процессоры</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for cpu in cpus %}
+            {% set specs %}
+            <ul class="list-unstyled">
+                <li><strong>Частота:</strong> {{ cpu.frequency }}</li>
+                <li><strong>Сокет:</strong> {{ cpu.socket }}</li>
+                <li><strong>Число ядер:</strong> {{ cpu.cores }}</li>
+            </ul>
+            {% endset %}
+
+            {% with
+                id=cpu.id,
+                name=cpu.name,
+                price=cpu.price,
+                images=cpu.images,
+                specs=specs,
+                product_type='cpu'
+            %}
+                {% include "base_product.html" %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

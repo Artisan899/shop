@@ -35,5 +35,22 @@
     <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
     {% block scripts %}{% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Принудительно обновляем иконку при загрузке
+    updateCartIcon();
+
+    // Проверяем состояние корзины
+    fetch('/get_cart_count')
+        .then(response => response.json())
+        .then(data => {
+            if(data.cart_count === 0) {
+                const cartIcon = document.getElementById('cart-icon');
+                if(cartIcon) cartIcon.src = '/static/pin/basket.jpg';
+            }
+        });
+});
+</script>
 </body>
 </html>

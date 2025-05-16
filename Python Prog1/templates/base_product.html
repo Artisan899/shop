@@ -1,11 +1,10 @@
-<!-- templates/base_product.html -->
 <div class="col">
     <div class="card h-100">
         <!-- Галерея изображений -->
         <div class="product-gallery">
             <div class="main-image">
                 {% for img in images %}
-                <img src="{{ url_for('static', filename='images/builds/' + img) }}"
+                <img src="{{ url_for('static', filename='images/' + product_type + 's/' + img) }}"
                      class="card-img-top {% if loop.first %}active{% else %}d-none{% endif %}"
                      alt="{{ name }}"
                      data-index="{{ loop.index0 }}">
@@ -24,23 +23,23 @@
 
         <div class="card-body">
             <h5 class="card-title">{{ name }}</h5>
-
-            <!-- Спецификации -->
             {{ specs|safe }}
+            <p class="price">Цена: {{ price|int }} ₽</p>
 
-            <p class="price">Цена: {{ price }} ₽</p>
+            {% set cart_key = product_type + '_' + id %}
+            {% set in_cart = cart_key in cart %}
 
-            <button class="btn btn-add-to-cart"
+            <button class="btn btn-add-to-cart {% if in_cart %}d-none{% endif %}"
                     onclick="addToCart(this, '{{ id }}', '{{ product_type }}')">
                 В корзину
             </button>
 
-            <div class="cart-controls d-none">
-                <span class="cart-status">Уже в вашей корзине</span>
+            <div class="cart-controls {% if not in_cart %}d-none{% endif %}">
+                <span class="cart-status">В корзине</span>
                 <div class="quantity-controls">
                     <button class="btn btn-outline-secondary btn-sm"
                             onclick="changeQuantity(this, -1, '{{ id }}', '{{ product_type }}')">−</button>
-                    <span class="quantity">1</span>
+                    <span class="quantity">{{ cart.get(cart_key, 1) }}</span>
                     <button class="btn btn-outline-secondary btn-sm"
                             onclick="changeQuantity(this, 1, '{{ id }}', '{{ product_type }}')">+</button>
                 </div>

@@ -1,0 +1,7 @@
+{
+    "hit_products": [
+        {"type": "PC", "id": "build_1"},
+        {"type": "GPU", "id": "gpu_2"},
+        {"type": "CPU", "id": "cpu_1"}
+    ]
+}

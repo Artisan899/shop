@@ -7,14 +7,24 @@
     <h2 class="text-center mb-4">Видеокарты</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for gpu in gpus %}
-            {% set product_specs %}
+            {% set specs %}
             <ul class="list-unstyled">
-                <li><strong>Память:</strong> {{ gpu.memory }} {{ gpu.memory_type }}</li>
-                <li><strong>Тактовая частота:</strong> {{ gpu.clock_speed }} MHz</li>
+                <li><strong>Объем памяти:</strong> {{ gpu.memory }} </li>
+                <li><strong>Тип памяти:</strong> {{ gpu.memory_type }}</li>
+                <li><strong>Тактовая частота:</strong> {{ gpu.clock_speed }}</li>
             </ul>
             {% endset %}
 
-            {% include "base_product.html" with context %}
+            {% with
+                id=gpu.id,
+                name=gpu.name,
+                price=gpu.price,
+                images=gpu.images,
+                specs=specs,
+                product_type='gpu'
+            %}
+                {% include "base_product.html" %}
+            {% endwith %}
         {% endfor %}
     </div>
 </div>

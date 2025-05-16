@@ -1,0 +1,22 @@
+[
+    {
+        "id": "cpu_1",
+        "name": "AMD Ryzen 5 5600",
+        "price": 8090,
+        "category": "CPU",
+        "images": ["product1.jpg", "product11.jpg", "product111.jpg" ],
+        "frequency": "3.5 GHz (4.4 GHz Turbo)",
+        "socket": "AM4",
+        "cores": 6
+    },
+    {
+        "id": "cpu_2",
+        "name": "Intel Core i5 12400F",
+        "price": 9690,
+        "category": "CPU",
+        "images": ["product2.jpg", "product22.jpg" ],
+        "frequency": "2.5 GHz (4.4 GHz Turbo)",
+        "socket": "LGA 1700",
+        "cores": 6
+    }
+]

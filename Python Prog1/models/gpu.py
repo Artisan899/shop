@@ -1,14 +1,22 @@
-# models/gpu.py
 from models.base_product import BaseProduct
 
 class GPU(BaseProduct):
-    def __init__(self, id, name, price, category, memory, memory_type, clock_speed, image):
-        self.id = id
+    def __init__(self, id, name, price, category, memory, memory_type, clock_speed, images):
         super().__init__(name, price, category)
-        self.memory = memory  # Объем памяти (например, "8 GB")
-        self.memory_type = memory_type  # Тип памяти (например, "GDDR6")
-        self.clock_speed = clock_speed  # Тактовая частота
-        self.image = image  # Путь к изображению
+        self.id = id
+        self.memory = memory
+        self.memory_type = memory_type
+        self.clock_speed = clock_speed
+        self.images = images if isinstance(images, list) else [images]
 
-    def get_description(self):
-        return f"Видеокарта {self.name} ({self.memory} {self.memory_type}, {self.clock_speed} MHz)"
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'category': self.category,
+            'memory': self.memory,
+            'memory_type': self.memory_type,
+            'clock_speed': self.clock_speed,
+            'images': self.images
+        }

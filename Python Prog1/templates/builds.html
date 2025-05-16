@@ -16,7 +16,17 @@
             </ul>
             {% endset %}
 
-            {% include "base_product.html" with context %}
+            {% with
+                id=build.id,
+                name=build.name,
+                price=build.price,
+                images=build.images,
+                specs=specs,
+                product_type='build',
+                cart_ids=cart_ids
+            %}
+                {% include "base_product.html" %}
+            {% endwith %}
         {% endfor %}
     </div>
 </div>
