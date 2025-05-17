@@ -8,11 +8,8 @@
             "points": 1000
         },
         "cart": {
-            "motherboard_mb_2": 1,
-            "build_build_1": 1,
             "gpu_gpu_2": 1,
-            "cpu_cpu_1": 2,
-            "cpu_cpu_2": 1
+            "cpu_cpu_1": 1
         }
     },
     {

@@ -11,6 +11,23 @@
     overflow: hidden;
 }
 
+/* Добавим в ваш CSS файл */
+.item-checkbox {
+    transform: scale(1.5);
+    margin-left: 5px;
+}
+
+#selected-total, #full-total {
+    font-weight: bold;
+    color: #007bff;
+}
+
+#selected-count {
+    font-weight: bold;
+}
+
+
+
 .main-image img {
     max-height: 100%;
     max-width: 100%;

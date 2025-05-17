@@ -51,6 +51,8 @@ function changeQuantity(button, delta, productId, productType) {
     }
 }
 
+
+
 function updateCart(productId, productType, quantity, quantityElement = null) {
     fetch('/update_cart', {
         method: 'POST',
@@ -74,6 +76,9 @@ function updateCart(productId, productType, quantity, quantityElement = null) {
         }
     });
 }
+
+
+
 
 // Функция для очистки корзины
 function clearCart() {

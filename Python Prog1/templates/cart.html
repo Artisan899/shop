@@ -23,6 +23,22 @@
             cursor: pointer;
             color: #dc3545;
         }
+        .item-checkbox {
+            transform: scale(1.5);
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        #selected-total, #full-total {
+            font-weight: bold;
+            color: #007bff;
+        }
+        #selected-count {
+            font-weight: bold;
+        }
+        .cart-item.selected {
+            background-color: rgba(0, 123, 255, 0.05);
+            border-left: 3px solid #007bff;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -37,6 +53,13 @@
                 <div class="card-body">
                     {% for item in cart_items %}
                     <div class="row mb-3 align-items-center cart-item" data-id="{{ item.id }}">
+                        <div class="col-md-1">
+                            <input type="checkbox"
+                                   class="form-check-input item-checkbox"
+                                   data-id="{{ item.id }}"
+                                   checked
+                                   data-price="{{ item.total_price }}">
+                        </div>
                         <div class="col-md-2">
                             <img src="{{ url_for('static', filename='images/' +
                                 ('gpus/' if 'gpu' in item.id else
@@ -83,11 +106,18 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Итого</h5>
+                    <h5 class="card-title">Сумма заказа</h5>
+
                     <div class="d-flex justify-content-between mb-3">
-                        <span>Товары ({{ cart_items|length }}):</span>
-                        <span>{{ total }} ₽</span>
+                        <span>Стоимость корзины:</span>
+                        <span id="full-total">{{ total }}</span> ₽
                     </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Стоимость товаров (<span id="selected-count">{{ cart_items|length }}</span>):</span>
+                        <span id="selected-total">{{ total }}</span> ₽
+                    </div>
+
                     <button class="btn btn-primary w-100 mb-2">Оформить заказ</button>
                     <button class="btn btn-outline-danger w-100" id="clear-cart">
                         <i class="bi bi-trash"></i> Очистить корзину
@@ -109,7 +139,60 @@
 </div>
 
 <script>
+// Объявляем глобальную переменную для общей суммы
+const FULL_TOTAL = {{ total }};
+
+function updateTotal() {
+    let selectedTotal = 0;
+    let selectedCount = 0;
+
+    // Перебираем все товары и суммируем выбранные
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const checkbox = item.querySelector('.item-checkbox');
+        const price = parseFloat(checkbox.dataset.price);
+
+        if (checkbox.checked) {
+            selectedTotal += price;
+            selectedCount += 1;
+            item.classList.add('selected');
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+
+    // Обновляем отображение
+    document.getElementById('selected-total').textContent = selectedTotal.toFixed(2);
+    document.getElementById('selected-count').textContent = selectedCount;
+    document.getElementById('full-total').textContent = FULL_TOTAL.toFixed(2);
+}
+
+function updateCartItem(itemId, quantity) {
+    const [productType, productId] = itemId.split('_', 2);
+
+    fetch('/update_cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `product_id=${productId}&product_type=${productType}&quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Инициализируем сумму
+    updateTotal();
+
+    // Вешаем обработчики на все чекбоксы
+    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateTotal);
+    });
+
     // Изменение количества
     document.querySelectorAll('.change-quantity').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -146,24 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     });
-
-    function updateCartItem(itemId, quantity) {
-        const [productType, productId] = itemId.split('_', 2);
-
-        fetch('/update_cart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `product_id=${productId}&product_type=${productType}&quantity=${quantity}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        });
-    }
 });
 </script>
 
