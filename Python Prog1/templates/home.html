@@ -40,10 +40,28 @@
             <img id="cart-icon" src="{{ url_for('static', filename='pin/basket.jpg') }}" alt="Корзина" style="width: 40px; height: 40px;">
             <span>Корзина</span>
         </a>
+
+
+        {% if 'username' in session %}
+        <div class="d-inline-flex flex-column align-items-center">
+            <div class="dropdown">
+                <button class="btn btn-outline-success d-inline-flex flex-column align-items-center p-0" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="p-2 d-flex flex-column align-items-center">
+                        <img src="{{ url_for('static', filename='pin/login.jpg') }}" alt="Пользователь" style="width: 40px; height: 40px;">
+                        <span>{{ session['username'] }}</span>
+                    </div>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/logout">Выйти</a></li>
+                </ul>
+            </div>
+        </div>
+        {% else %}
         <a href="/login" class="btn btn-outline-success d-inline-flex flex-column align-items-center">
             <img src="{{ url_for('static', filename='pin/login.jpg') }}" alt="Войти" style="width: 40px; height: 40px;">
             <span>Войти</span>
         </a>
+        {% endif %}
     </div>
 
     <!-- Навигация -->

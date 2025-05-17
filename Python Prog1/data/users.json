@@ -1,1 +1,11 @@
-[{"username": "test", "email": "test@test", "password": "$2b$12$807b.6T.dhCGDMr3mLEnvOyzpvtCDD.ruY.iX6xILRBS/HOG.nYf."}]
+[
+    {
+        "username": "test3",
+        "email": "12@12",
+        "password": "$2b$12$ex7zWF2UVmR1iEZKJaAjmOojTCdqgpshbmKLQEecxgMozcpX7Al3G",
+        "bonus_card": {
+            "id": "428ad5a8-9954-4637-b37c-23ce1f286ad7",
+            "points": 1000
+        }
+    }
+]

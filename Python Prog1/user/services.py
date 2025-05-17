@@ -1,5 +1,7 @@
 import json
-import bcrypt  # Импортируем библиотеку для хэширования паролей
+import bcrypt
+
+from user.models import *
 
 class UserService:
     def __init__(self, filepath):
@@ -7,41 +9,34 @@ class UserService:
         self._ensure_file()
 
     def _ensure_file(self):
-        """Проверка на наличие файла, создание при необходимости, и его правильное форматирование."""
         try:
             with open(self.filepath, 'r') as f:
-                # Пробуем загрузить содержимое файла
                 data = f.read().strip()
-                if not data:  # Если файл пустой, записываем пустой список
+                if not data:
                     with open(self.filepath, 'w') as f:
                         json.dump([], f)
         except (FileNotFoundError, json.JSONDecodeError):
-            # Если файла нет или он повреждён, создаём пустой файл
             with open(self.filepath, 'w') as f:
                 json.dump([], f)
 
     def _load_users(self):
-        """Загрузка всех пользователей из файла."""
         with open(self.filepath, 'r') as f:
             return json.load(f)
 
     def _save_users(self, users):
-        """Сохранение списка пользователей в файл."""
         with open(self.filepath, 'w') as f:
-            json.dump(users, f)
+            json.dump(users, f, indent=4)
 
     def add_user(self, username, email, password):
-        """Добавление нового пользователя с хэшированием пароля."""
         users = self._load_users()
         if any(user['email'] == email for user in users):
             raise ValueError("Пользователь с таким email уже существует.")
-        # Хэшируем пароль перед сохранением
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        users.append({"username": username, "email": email, "password": hashed_password.decode('utf-8')})
+
+        new_user = User(username, email, password)
+        users.append(new_user.to_dict())
         self._save_users(users)
 
     def get_user(self, username_or_email):
-        """Поиск пользователя по имени или email."""
         users = self._load_users()
         for user in users:
             if user['username'] == username_or_email or user['email'] == username_or_email:
@@ -49,5 +44,18 @@ class UserService:
         return None
 
     def check_password(self, stored_password, provided_password):
-        """Проверка пароля с хэшированием."""
-        return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password.encode('utf-8'))
+        try:
+            return bcrypt.checkpw(provided_password.encode('utf-8'), stored_password.encode('utf-8'))
+        except Exception as e:
+            print(f"Error checking password: {e}")
+            return False
+
+    def get_bonus_card(self, username_or_email):
+        user = self.get_user(username_or_email)
+        if user and 'bonus_card' in user:
+            return user['bonus_card']
+        return None
+
+    def is_email_taken(self, email):
+        users = self._load_users()
+        return any(user['email'] == email for user in users)

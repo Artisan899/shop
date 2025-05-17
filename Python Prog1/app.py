@@ -42,15 +42,21 @@ def register():
     # Проверка на совпадение паролей
     if password != confirm_password:
         flash("Пароли не совпадают", 'danger')
-        return redirect(url_for('index'))
+        return redirect(url_for('register_page'))
+
+    # Проверка на занятость email
+    if user_service.is_email_taken(email):
+        flash("Пользователь с таким email уже существует", 'danger')
+        return redirect(url_for('register_page'))
 
     # Регистрация пользователя
     try:
         user_service.add_user(username, email, password)
-        flash("Регистрация успешна!", 'success')
-    except ValueError as e:
-        flash(str(e), 'danger')
-    return redirect(url_for('login'))
+        flash("Регистрация успешна! Вам начислено 1000 бонусных баллов.", 'success')
+        return redirect(url_for('login'))
+    except Exception as e:
+        flash(f"Ошибка при регистрации: {str(e)}", 'danger')
+        return redirect(url_for('register_page'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -66,11 +72,17 @@ def login():
         elif not user_service.check_password(user['password'], password):
             flash("Неверный пароль", 'danger')
         else:
+            session['username'] = user['username']  # Сохраняем имя пользователя в сессии
             flash("Вход успешен!", 'success')
-            return redirect(url_for('home'))  # Переход на домашнюю страницу (пока пустую)
+            return redirect(url_for('home'))
 
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)  # Удаляем имя пользователя из сессии
+    flash("Вы успешно вышли из системы", 'success')
+    return redirect(url_for('home'))
 
 @app.route('/home')
 def home():
