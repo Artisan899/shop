@@ -1,0 +1,22 @@
+[
+    {
+        "id": "mb_1",
+        "name": "MSI PRO H610M-E DDR4",
+        "price": 5510,
+        "category": "Motherboard",
+        "images": ["MB1.jpg", "MB11.jpg", "MB111.jpg"],
+        "socket": "LGA1700",
+        "memory_support": "2x DDR4",
+        "slots": "PCI-E 4.0 x16 х 1, PCI-E x1 х 1"
+    },
+    {
+        "id": "mb_2",
+        "name": "MSI MPG B550 GAMING PLUS",
+        "price": 11410,
+        "category": "Motherboard",
+        "images": ["MB2.jpg", "MB22.jpg", "MB222.jpg"],
+        "socket": "SocketAM4",
+        "memory_support": "4х DDR4",
+        "slots": "PCI-E 4.0 x16 х 1"
+    }
+]

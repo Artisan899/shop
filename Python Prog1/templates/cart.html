@@ -38,7 +38,11 @@
                     {% for item in cart_items %}
                     <div class="row mb-3 align-items-center cart-item" data-id="{{ item.id }}">
                         <div class="col-md-2">
-                            <img src="{{ url_for('static', filename='images/' + ('gpus/' if 'gpu' in item.id else 'cpus/' if 'cpu' in item.id else 'builds/') + item.product.images[0]) }}""
+                            <img src="{{ url_for('static', filename='images/' +
+                                ('gpus/' if 'gpu' in item.id else
+                                 'cpus/' if 'cpu' in item.id else
+                                 'motherboards/' if 'motherboard' in item.id else
+                                 'builds/') + item.product.images[0]) }}"
                                  class="img-fluid cart-item-img"
                                  alt="{{ item.product.name }}">
                         </div>
@@ -49,6 +53,8 @@
                                     {{ item.product.memory }} {{ item.product.memory_type }}
                                 {% elif 'cpu' in item.id %}
                                     {{ item.product.frequency }}, {{ item.product.socket }}, {{ item.product.cores }} ядер
+                                {% elif 'motherboard' in item.id %}
+                                    {{ item.product.socket }}, {{ item.product.memory_support }}
                                 {% else %}
                                     {{ item.product.cpu }}, {{ item.product.gpu }}
                                 {% endif %}
@@ -62,7 +68,7 @@
                             </div>
                         </div>
                         <div class="col-md-2 text-end">
-                            <span class="price">{{ item.total_price}} ₽</span>
+                            <span class="price">{{ item.total_price }} ₽</span>
                         </div>
                         <div class="col-md-1 text-end">
                             <i class="bi bi-trash remove-item"></i>
@@ -142,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function updateCartItem(itemId, quantity) {
-        const [productType, productId] = itemId.split('_').slice(0, 2);
+        const [productType, productId] = itemId.split('_', 2);
 
         fetch('/update_cart', {
             method: 'POST',
@@ -154,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload(); // Перезагружаем страницу для обновления
+                location.reload();
             }
         });
     }

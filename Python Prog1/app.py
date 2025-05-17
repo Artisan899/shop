@@ -1,8 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+
 from user.services import UserService
+
+# Все вкладки
 from models.build_factory import BuildFactory
 from models.gpu_factory import GPUFactory
 from models.cpu_factory import CPUFactory
+from models.motherboard_factory import MotherboardFactory
+
+
 from flask import jsonify
 from flask import session
 
@@ -73,23 +79,25 @@ def home():
         with open('data/hit_products.json', 'r') as f:
             hit_list = json.load(f)['hit_products']
 
-        # Загружаем все товары как словари
+        # Загружаем все товары через фабрики
         gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
         builds = BuildFactory.load_builds_from_json('data/builds.json')
         cpus = CPUFactory.load_cpus_from_json('data/cpus.json')
 
-        # Собираем хиты продаж
+        # Собираем хиты продаж в унифицированном формате
         hit_products = []
         for item in hit_list:
             product = None
+            product_type = None
+
             if item['type'] == 'PC':
-                product = next((b for b in builds if b['id'] == item['id']), None)
+                product = next((b for b in builds if b.id == item['id']), None)
                 product_type = 'build'
             elif item['type'] == 'GPU':
-                product = next((g for g in gpus if g['id'] == item['id']), None)
+                product = next((g for g in gpus if g.id == item['id']), None)
                 product_type = 'gpu'
             elif item['type'] == 'CPU':
-                product = next((c for c in cpus if c['id'] == item['id']), None)
+                product = next((c for c in cpus if c.id == item['id']), None)
                 product_type = 'cpu'
 
             if product:
@@ -98,15 +106,18 @@ def home():
                     'type': product_type
                 })
 
-        return render_template('home.html', hit_products=hit_products)
+        # Получаем текущую корзину из сессии
+        cart = session.get('cart', {})
+
+        return render_template('home.html',
+                               hit_products=hit_products,
+                               cart=cart)
 
     except Exception as e:
         print(f"Error loading hit products: {str(e)}")
-        print(f"Loaded builds: {builds}")
-        print(f"Loaded gpus: {gpus}")
-        print(f"Loaded cpus: {cpus}")
-        print(f"Hit products: {hit_products}")
-        return render_template('home.html', hit_products=[])
+        return render_template('home.html',
+                               hit_products=[],
+                               cart={})
 
 
 @app.route('/cart')
@@ -118,6 +129,7 @@ def cart():
     all_gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
     all_builds = BuildFactory.load_builds_from_json('data/builds.json')
     all_cpus = CPUFactory.load_cpus_from_json('data/cpus.json')
+    all_motherboards = MotherboardFactory.load_motherboards_from_json('data/motherboards.json')
 
     # Собираем информацию о товарах в корзине
     for key, quantity in cart.items():
@@ -130,6 +142,8 @@ def cart():
             product = next((b for b in all_builds if b.id == product_id), None)
         elif product_type == 'cpu':
             product = next((c for c in all_cpus if c.id == product_id), None)
+        elif product_type == 'motherboard':
+            product = next((m for m in all_motherboards if m.id == product_id), None)
 
         if product:
             cart_items.append({
@@ -140,7 +154,6 @@ def cart():
             })
 
     total = sum(item['total_price'] for item in cart_items)
-    print("Cart items:", cart_items)  # Для отладки
     return render_template('cart.html', cart_items=cart_items, total=total)
 
 
@@ -254,6 +267,17 @@ def cpus():
                          cart=cart,
                          product_type='cpu',
                          cart_ids=cart_cpu_ids)
+
+@app.route('/motherboards')
+def motherboards():
+    motherboards = MotherboardFactory.load_motherboards_from_json('data/motherboards.json')
+    cart = session.get('cart', {})
+    cart_mb_ids = [key.split('_')[1] for key in cart.keys() if key.startswith('motherboard_')]
+    return render_template('motherboards.html',
+                         motherboards=motherboards,
+                         cart=cart,
+                         product_type='motherboard',
+                         cart_ids=cart_mb_ids)
 
 
 

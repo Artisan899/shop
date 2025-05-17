@@ -19,14 +19,36 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+        .hit-products-title {
+            margin: 2rem 0 1rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        .icon-buttons {
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 
 <body class="bg-light">
-<div class="container mt-5">
+<div class="container mt-3">
+    <!-- Кнопки корзины и входа -->
+    <div class="d-flex justify-content-end gap-3 icon-buttons">
+        <a href="/cart" class="btn btn-outline-primary d-inline-flex flex-column align-items-center" id="cart-button">
+            <img id="cart-icon" src="{{ url_for('static', filename='pin/basket.jpg') }}" alt="Корзина" style="width: 40px; height: 40px;">
+            <span>Корзина</span>
+        </a>
+        <a href="/login" class="btn btn-outline-success d-inline-flex flex-column align-items-center">
+            <img src="{{ url_for('static', filename='pin/login.jpg') }}" alt="Войти" style="width: 40px; height: 40px;">
+            <span>Войти</span>
+        </a>
+    </div>
+
     <!-- Навигация -->
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <ul class="nav justify-content-center">
                 <li class="nav-item">
                     <a class="nav-link active" href="/builds">Готовые сборки</a>
@@ -38,7 +60,7 @@
                     <a class="nav-link" href="/cpus">Процессор</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Мат Плата</a>
+                    <a class="nav-link" href="/motherboards">Мат Плата</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">ОЗУ</a>
@@ -53,53 +75,51 @@
         </div>
     </div>
 
-    <!-- Кнопки "Корзина" и "Войти" справа сверху -->
-    <div class="d-flex justify-content-end gap-3 mt-3">
-        <!-- Кнопка Корзина -->
-        <a href="/cart" class="btn btn-outline-primary d-inline-flex flex-column align-items-center">
-            <img src="{{ url_for('static', filename='pin/basket.jpg') }}" alt="Корзина" style="width: 40px; height: 40px;">
-            <span>Корзина</span>
-        </a>
-
-        <!-- Кнопка Войти -->
-        <a href="/login" class="btn btn-outline-success d-inline-flex flex-column align-items-center">
-            <img src="{{ url_for('static', filename='pin/login.jpg') }}" alt="Войти" style="width: 40px; height: 40px;">
-            <span>Войти</span>
-        </a>
-    </div>
-
     <!-- Лента хит продаж -->
-    <h3 class="mt-5 text-center">Хит продаж</h3>
+    <h2 class="hit-products-title">Хит продаж</h2>
+
+    {% if hit_products %}
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for item in hit_products %}
-        {% set product = item.product %}
-        {% set product_type = item.type %}
         <div class="col">
             <div class="card h-100 hit-product-card">
-                <img src="{{ url_for('static', filename='images/' + product_type + 's/' + product.images[0]) }}"
-                     class="card-img-top" alt="{{ product.name }}">
+                <img src="{{ url_for('static', filename='images/' + item.type + 's/' + item.product.images[0]) }}"
+                     class="card-img-top"
+                     alt="{{ item.product.name }}">
                 <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <span class="badge bg-secondary">
-                        {% if product_type == 'build' %}PC
-                        {% elif product_type == 'gpu' %}GPU
-                        {% elif product_type == 'cpu' %}CPU
-                        {% endif %}
-                    </span>
-                    <p class="price mt-2">Цена: {{ product.price|int }} ₽</p>
-                    <button class="btn btn-primary"
-                            onclick="addToCart(this, '{{ product.id }}', '{{ product_type }}')">
+                    <h5 class="card-title">{{ item.product.name }}</h5>
+                    <p class="price mt-2">Цена: {{ item.product.price|int }} ₽</p>
+
+                    {% set cart_key = item.type + '_' + item.product.id %}
+                    {% set in_cart = cart_key in cart %}
+
+                    <button class="btn btn-primary btn-add-to-cart {% if in_cart %}d-none{% endif %}"
+                            onclick="addToCart(this, '{{ item.product.id }}', '{{ item.type }}')">
                         В корзину
                     </button>
+
+                    <div class="cart-controls {% if not in_cart %}d-none{% endif %}">
+                        <div class="quantity-controls">
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    onclick="changeQuantity(this, -1, '{{ item.product.id }}', '{{ item.type }}')">−</button>
+                            <span class="quantity">{{ cart.get(cart_key, 1) }}</span>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    onclick="changeQuantity(this, 1, '{{ item.product.id }}', '{{ item.type }}')">+</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="alert alert-warning">Нет товаров в списке хитов продаж</div>
+    {% endif %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// Функция для добавления в корзину
 function addToCart(button, productId, productType) {
     fetch('/add_to_cart', {
         method: 'POST',
@@ -111,17 +131,72 @@ function addToCart(button, productId, productType) {
     .then(response => response.json())
     .then(data => {
         if(data.success) {
-            button.textContent = 'Добавлено!';
-            button.classList.remove('btn-primary');
-            button.classList.add('btn-success');
-            setTimeout(() => {
-                button.textContent = 'В корзину';
-                button.classList.remove('btn-success');
-                button.classList.add('btn-primary');
-            }, 1500);
+            // Обновляем кнопки
+            button.classList.add('d-none');
+            const controls = button.nextElementSibling;
+            controls.classList.remove('d-none');
+
+            // Обновляем иконку корзины
+            updateCartIcon();
         }
     });
 }
+
+// Функция для изменения количества
+function changeQuantity(button, delta, productId, productType) {
+    const controls = button.closest('.quantity-controls');
+    const quantityElement = controls.querySelector('.quantity');
+    const currentQuantity = parseInt(quantityElement.textContent);
+    const newQuantity = currentQuantity + delta;
+
+    if (newQuantity > 0) {
+        updateCartQuantity(productId, productType, newQuantity, quantityElement);
+    } else {
+        // Если количество 0, показываем кнопку "В корзину"
+        const cardBody = button.closest('.card-body');
+        cardBody.querySelector('.btn-add-to-cart').classList.remove('d-none');
+        cardBody.querySelector('.cart-controls').classList.add('d-none');
+        updateCartQuantity(productId, productType, 0);
+    }
+}
+
+// Функция для обновления количества в корзине
+function updateCartQuantity(productId, productType, quantity, quantityElement = null) {
+    fetch('/update_cart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `product_id=${productId}&product_type=${productType}&quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success && quantityElement) {
+            quantityElement.textContent = quantity;
+        }
+        updateCartIcon();
+    });
+}
+
+// Функция для обновления иконки корзины
+function updateCartIcon() {
+    fetch('/get_cart_count')
+        .then(response => response.json())
+        .then(data => {
+            const cartIcon = document.getElementById('cart-icon');
+            if (cartIcon) {
+                const count = data.cart_count;
+                const imageName = count <= 0 ? 'basket.jpg' :
+                                count <= 5 ? `basket${count}.jpg` : 'basket55.jpg';
+                cartIcon.src = `/static/pin/${imageName}`;
+            }
+        });
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartIcon();
+});
 </script>
 </body>
 </html>

@@ -47,13 +47,39 @@
 .price {
     font-size: 1.25rem;
     font-weight: bold;
-    color: #d9534f;
     margin-top: 10px;
 }
 
 .btn-add-to-cart {
-    background-color: #28a745;
+    background-color: #007bff;
     color: white;
     font-weight: bold;
     margin-top: auto;
+}
+
+/* Эффект приподнимания для всех карточек */
+.card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Дополнительные улучшения для кнопок при наведении */
+.btn-add-to-cart:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Плавное изменение индикаторов */
+.thumbnail-indicator:hover {
+    transform: scale(1.3);
+    background-color: #007bff;
 }

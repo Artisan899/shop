@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Материнские платы{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Материнские платы</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for motherboard in motherboards %}
+            {% set specs %}
+            <ul class="list-unstyled">
+                <li><strong>Сокет:</strong> {{ motherboard.socket }}</li>
+                <li><strong>Поддержка памяти:</strong> {{ motherboard.memory_support }}</li>
+                <li><strong>Слоты расширения:</strong> {{ motherboard.slots }}</li>
+            </ul>
+            {% endset %}
+
+            {% with
+                id=motherboard.id,
+                name=motherboard.name,
+                price=motherboard.price,
+                images=motherboard.images,
+                specs=specs,
+                product_type='motherboard',
+                in_cart=motherboard.id in cart_ids
+            %}
+                {% include "base_product.html" %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
