@@ -1,9 +1,13 @@
-function addToCart(button, productId, productType) {
-    if (!productId || !productType) {
-        console.error('Invalid product data:', {productId, productType});
-        return;
+function handleCartError(response) {
+    if (response.status === 401) {
+        alert('Для работы с корзиной необходимо войти в систему');
+        window.location.href = '/login';
+        return true;
     }
+    return false;
+}
 
+function addToCart(button, productId, productType) {
     fetch('/add_to_cart', {
         method: 'POST',
         headers: {
@@ -12,26 +16,19 @@ function addToCart(button, productId, productType) {
         body: `product_id=${encodeURIComponent(productId)}&product_type=${encodeURIComponent(productType)}`
     })
     .then(response => {
+        if (handleCartError(response)) return;
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
     })
     .then(data => {
-        if (data.success) {
-            // Скрываем кнопку "В корзину"
+        if (data && data.success) {
             button.classList.add('d-none');
-
-            // Показываем элементы управления количеством
             const cardBody = button.closest('.card-body');
             const controls = cardBody.querySelector('.cart-controls');
             controls.classList.remove('d-none');
-
-            // Устанавливаем начальное количество
             const quantityElement = controls.querySelector('.quantity');
             quantityElement.textContent = '1';
-
             updateCartIcon();
-        } else {
-            console.error('Error adding to cart:', data.error);
         }
     })
     .catch(error => console.error('Error:', error));

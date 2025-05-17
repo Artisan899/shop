@@ -1,11 +1,28 @@
 [
     {
-        "username": "test3",
-        "email": "12@12",
-        "password": "$2b$12$ex7zWF2UVmR1iEZKJaAjmOojTCdqgpshbmKLQEecxgMozcpX7Al3G",
+        "username": "test2",
+        "email": "12344@123",
+        "password": "$2b$12$PR.hL7jAIsCilcwalpcN1Ol0CTWZ0hTs4nArpfFZmQalHZOcn32YK",
         "bonus_card": {
-            "id": "428ad5a8-9954-4637-b37c-23ce1f286ad7",
+            "id": "d9a93567-a9a7-4e50-aa12-9a5a9232d334",
             "points": 1000
+        },
+        "cart": {
+            "motherboard_mb_2": 1,
+            "build_build_1": 1,
+            "gpu_gpu_2": 1,
+            "cpu_cpu_1": 2,
+            "cpu_cpu_2": 1
         }
+    },
+    {
+        "username": "test5",
+        "email": "124@1234",
+        "password": "$2b$12$hMt0IcSugKVvDQVY3bRSAOdZF0C52DfBnaVaeyWAE2eCVg/SJFxT6",
+        "bonus_card": {
+            "id": "f25f9525-c53a-4eb0-adc9-1398a974d3c1",
+            "points": 1000
+        },
+        "cart": {}
     }
 ]

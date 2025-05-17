@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 from user.services import UserService
+from user.models import User
 
 # Все вкладки
 from models.build_factory import BuildFactory
@@ -69,10 +70,10 @@ def login():
 
         if not user:
             flash("Пользователь с таким именем не найден", 'danger')
-        elif not user_service.check_password(user['password'], password):
+        elif not user_service.check_password(user.password, password):  # Используем user.password вместо user['password']
             flash("Неверный пароль", 'danger')
         else:
-            session['username'] = user['username']  # Сохраняем имя пользователя в сессии
+            session['username'] = user.username
             flash("Вход успешен!", 'success')
             return redirect(url_for('home'))
 
@@ -95,6 +96,7 @@ def home():
         gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
         builds = BuildFactory.load_builds_from_json('data/builds.json')
         cpus = CPUFactory.load_cpus_from_json('data/cpus.json')
+        motherboards = MotherboardFactory.load_motherboards_from_json('data/motherboards.json')
 
         # Собираем хиты продаж в унифицированном формате
         hit_products = []
@@ -111,6 +113,10 @@ def home():
             elif item['type'] == 'CPU':
                 product = next((c for c in cpus if c.id == item['id']), None)
                 product_type = 'cpu'
+
+            elif item['type'] == 'Motherboard':
+                product = next((m for m in motherboards if m.id == item['id'] ), None)
+                product_type = 'motherboard'
 
             if product:
                 hit_products.append({
@@ -134,8 +140,17 @@ def home():
 
 @app.route('/cart')
 def cart():
-    cart = session.get('cart', {})
+    if 'username' not in session:
+        flash('Для просмотра корзины необходимо войти в систему', 'warning')
+        return redirect(url_for('login'))
+
+    user = user_service.get_user(session['username'])
+    if not user:
+        flash('Пользователь не найден', 'danger')
+        return redirect(url_for('home'))
+
     cart_items = []
+    total = 0
 
     # Загружаем все товары как объекты
     all_gpus = GPUFactory.load_gpus_from_json('data/gpus.json')
@@ -144,7 +159,7 @@ def cart():
     all_motherboards = MotherboardFactory.load_motherboards_from_json('data/motherboards.json')
 
     # Собираем информацию о товарах в корзине
-    for key, quantity in cart.items():
+    for key, quantity in user.cart.items():
         product_type, product_id = key.split('_', 1)
 
         product = None
@@ -158,41 +173,45 @@ def cart():
             product = next((m for m in all_motherboards if m.id == product_id), None)
 
         if product:
+            item_total = product.price * quantity
+            total += item_total
             cart_items.append({
                 'id': key,
                 'product': product.to_dict(),
                 'quantity': quantity,
-                'total_price': product.price * quantity
+                'total_price': item_total
             })
 
-    total = sum(item['total_price'] for item in cart_items)
     return render_template('cart.html', cart_items=cart_items, total=total)
+
 
 
 @app.route('/clear_cart', methods=['POST'])
 def clear_cart():
-    try:
-        # Полностью очищаем корзину
-        session['cart'] = {}
-        session.modified = True
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
 
-        # Логируем действие
-        print("Корзина полностью очищена")
+    user = user_service.get_user(session['username'])
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
 
-        return jsonify({
-            'success': True,
-            'cart_count': 0,
-            'message': 'Корзина очищена'
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+    user.clear_cart()
+    user_service.update_user(user)
+
+    return jsonify({
+        'success': True,
+        'cart_count': 0,
+        'message': 'Корзина очищена'
+    })
+
+
 
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
     try:
         product_id = request.form.get('product_id')
         product_type = request.form.get('product_type')
@@ -200,15 +219,16 @@ def add_to_cart():
         if not product_id or not product_type:
             return jsonify({'success': False, 'error': 'Missing product data'}), 400
 
-        cart = session.get('cart', {})
-        key = f"{product_type}_{product_id}"
-        cart[key] = cart.get(key, 0) + 1
-        session['cart'] = cart
-        session.modified = True
+        user = user_service.get_user(session['username'])
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+
+        user.add_to_cart(product_type, product_id)
+        user_service.update_user(user)
 
         return jsonify({
             'success': True,
-            'cart_count': sum(cart.values())
+            'cart_count': user.get_cart_count()
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -218,31 +238,36 @@ def add_to_cart():
 
 @app.route('/update_cart', methods=['POST'])
 def update_cart():
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
     product_id = request.form.get('product_id')
     product_type = request.form.get('product_type')
     quantity = int(request.form.get('quantity', 1))
 
-    cart = session.get('cart', {})
-    key = f"{product_type}_{product_id}"
+    user = user_service.get_user(session['username'])
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
 
-    if quantity <= 0:
-        cart.pop(key, None)
-    else:
-        cart[key] = quantity
+    user.update_cart_item(product_type, product_id, quantity)
+    user_service.update_user(user)
 
-    session['cart'] = cart
-    session.modified = True
     return jsonify({
         'success': True,
-        'cart_count': sum(cart.values())
+        'cart_count': user.get_cart_count()
     })
 
 @app.route('/get_cart_count')
 def get_cart_count():
-    cart = session.get('cart', {})
-    print(f"Cart contents: {cart}")  # Отладочный вывод
+    if 'username' not in session:
+        return jsonify({'cart_count': 0})
+
+    user = user_service.get_user(session['username'])
+    if not user:
+        return jsonify({'cart_count': 0})
+
     return jsonify({
-        'cart_count': sum(cart.values())
+        'cart_count': user.get_cart_count()
     })
 
 

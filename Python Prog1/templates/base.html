@@ -10,6 +10,11 @@
 <body class="bg-light">
     <div class="container mt-3">
         <!-- Кнопки корзины -->
+        {% if 'username' not in session %}
+        <div class="alert alert-warning">
+            Для работы с корзиной необходимо <a href="{{ url_for('login') }}">войти</a> в систему
+        </div>
+        {% endif %}
         <div class="d-flex justify-content-end gap-3">
             <button class="btn btn-outline-danger d-inline-flex align-items-center"
                     onclick="clearCart()"
